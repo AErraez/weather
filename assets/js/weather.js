@@ -53,6 +53,25 @@ let loadWeekForecastData = (base) => {
 	
 }
 
+document.addEventListener = ('DOMContentLoaded',()=>{
+    loadDayForecastData(weather_data)
+    
+})
 
-loadDayForecastData(weather_data);
-loadWeekForecastData(weather_data);
+
+
+if (document.readyState !== 'loading') {
+    loadDayForecastData(weather_data)
+    let loadbutton = document.getElementById("loadinfo")
+    loadbutton.onclick= (event) => {
+        loadWeekForecastData(weather_data)
+    }
+} else {
+    document.addEventListener('DOMContentLoaded', function () {
+        loadDayForecastData(weather_data)
+        let loadbutton = document.getElementById("loadinfo")
+        loadbutton.onclick= (event) => {
+            loadWeekForecastData(weather_data)
+        }
+    });
+}
