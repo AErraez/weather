@@ -2,7 +2,7 @@ import {weather_data} from "./data.js"
 
 
 let loadDayForecastData = (base) => {
-	let info_gye= base[0]
+	let info_gye= base
     let {city_code, city, date, maxtemperature, mintemperature, cloudiness, wind, rainfall, forecast_today, forecast_week} = info_gye
     document.getElementById("city").innerHTML=city
     document.getElementById("date").innerHTML=date
@@ -30,9 +30,10 @@ let loadDayForecastData = (base) => {
 }
 
 let loadWeekForecastData = (base) => {
-	let info_gye= base[0]
+	let info_gye= base
     let {forecast_week} =info_gye
     let list=document.getElementsByClassName("list-group")[0]
+    let listtext= ""
     for (let elem of forecast_week){
         let {day,text,date,temperature,icon} =elem
         let forecast_text= `<li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
@@ -45,33 +46,52 @@ let loadWeekForecastData = (base) => {
           <div class="ms-4"><i class="material-icons fs-2 me-1 rainy">${icon}</i></div>
         </div>
         </li>`
-        list.innerHTML+=forecast_text 
+        listtext+=forecast_text 
 
 
     }
-
+    list.innerHTML=listtext
 	
 }
 
-document.addEventListener = ('DOMContentLoaded',()=>{
-    loadDayForecastData(weather_data)
-    
-})
-
-
-
-if (document.readyState !== 'loading') {
-    loadDayForecastData(weather_data)
-    let loadbutton = document.getElementById("loadinfo")
-    loadbutton.onclick= (event) => {
-        loadWeekForecastData(weather_data)
-    }
-} else {
-    document.addEventListener('DOMContentLoaded', function () {
-        loadDayForecastData(weather_data)
+let loaddata= (cityobject) => {
+    if (document.readyState !== 'loading') {
+        loadDayForecastData(cityobject)
         let loadbutton = document.getElementById("loadinfo")
         loadbutton.onclick= (event) => {
-            loadWeekForecastData(weather_data)
+            loadWeekForecastData(cityobject)
         }
-    });
+    } else {
+        document.addEventListener('DOMContentLoaded', function () {
+            loadDayForecastData(cityobject)
+            let loadbutton = document.getElementById("loadinfo")
+            loadbutton.onclick= (event) => {
+                loadWeekForecastData(cityobject)
+            }
+        });
+    }
 }
+let loadcities= (base) => {
+    let menu= document.getElementById("dropdownMenuButton")
+    menu.innerHTML= `<option value="" selected disabled hidden>Seleccione una ciudad</option>`
+    let citylist= []
+    for (let elem of base) {
+        let {city}= elem
+        citylist.push(city)
+        menu.innerHTML+=`<option class="dropdown-item" value=${city}>${city}</option>`
+    }
+    menu.addEventListener("change", event =>{
+        let text_week_forecast = document.getElementsByClassName("list-group")[0]
+        text_week_forecast.innerHTML=""
+        let val = event.target.value
+        let i = citylist.indexOf(val)
+        loaddata(base[i])
+    })
+
+}
+
+
+
+
+
+loadcities(weather_data)
